@@ -39,23 +39,23 @@ resource "digitalocean_droplet" "workerNode" {
   vpc_uuid    = digitalocean_vpc.int1-vpc.id
   }
 
-resource "null_resource" "requirementsInstallation" {
-  connection {
-      type = "ssh"
-      host = "${digitalocean_droplet.masterNode.ipv4_address}"
-      user = "root"
-      private_key = "${file("./modules/nodes/secrets/id_rsa")}"
-  }
+# resource "null_resource" "requirementsInstallation" {
+#   connection {
+#       type = "ssh"
+#       host = "${digitalocean_droplet.masterNode.ipv4_address}"
+#       user = "root"
+#       private_key = "${file("./modules/nodes/secrets/id_rsa")}"
+#   }
 
-  provisioner "file" {
-    source = "./playbooks/install_prerequisites.sh"
-    destination = "/root/install_prerequisites.sh"
-  }
+#   provisioner "file" {
+#     source = "./playbooks/install_prerequisites.sh"
+#     destination = "/root/install_prerequisites.sh"
+#   }
   
-  provisioner "remote-exec" {
-    inline = [
-      # Run the operations script.
-      ". ./install_prerequisites.sh",
-    ]
-  }
-}
+#   provisioner "remote-exec" {
+#     inline = [
+#       # Run the operations script.
+#       ". ./install_prerequisites.sh",
+#     ]
+#   }
+# }

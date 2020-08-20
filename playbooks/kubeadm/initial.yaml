@@ -1,0 +1,19 @@
+- hosts: all
+  become: yes
+  vars:
+    username: master
+  tasks:
+    - name: create the 'master' user
+      user: name=master append=yes state=present createhome=yes shell=/bin/bash
+
+    - name: allow 'master' to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        line: '"{{ username }}" ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+    
+    - name: set up authorized keys for the master user
+      authorized_key: user="{{ username }}" key="{{item}}"
+      with_file:
+        - ~/.ssh/id_rsa.pub
+

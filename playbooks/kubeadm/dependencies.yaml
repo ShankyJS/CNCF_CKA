@@ -1,0 +1,50 @@
+- hosts: all
+  become: yes
+  tasks:
+   - name: Install Docker
+     apt:
+       name: docker.io
+       state: present
+       update_cache: true
+
+   - name: Enable Docker Service
+     service: 
+       name: docker
+       enabled: yes
+
+   - name: install APT Transport HTTPS
+     apt:
+       name: apt-transport-https
+       state: present
+
+   - name: Kubernetes APT Key
+     apt_key:
+       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+       state: present
+
+   - name: Kubernetes APT Repository
+     apt_repository:
+      repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+      state: present
+      filename: 'kubernetes'
+
+   - name: install kubelet
+     apt:
+       name: kubelet=1.18.1-00
+       state: present
+       update_cache: true
+
+   - name: install kubeadm
+     apt:
+       name: kubeadm=1.18.1-00
+       state: present
+
+   - name: install kubectl
+     apt:
+       name: kubectl=1.18.1-00
+       state: present
+       force: yes
+    
+   - name: Marking apt services
+     command: sudo apt-mark hold kubelet kubeadm kubectl
+        

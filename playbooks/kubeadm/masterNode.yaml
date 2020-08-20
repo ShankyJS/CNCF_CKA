@@ -1,0 +1,45 @@
+- hosts: master
+  become: yes
+  vars:
+    username: master
+  tasks:
+    - name: initialize the cluster
+      shell: kubeadm init --pod-network-cidr=10.80.0.0/16 >> cluster_initialized.txt
+      args:
+        chdir: $HOME
+        creates: cluster_initialized.txt
+
+    - name: Use cluster Step
+      become: yes
+      become_user: "{{ username }}"
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+
+    - name: Copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/"{{ username }}"/.kube/config
+        remote_src: yes
+        owner: "{{ username }}"
+
+    - name: install Pod network (Calico)
+      become: yes
+      become_user: "{{ username }}"
+      shell: kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml >> pod_network_setup.txt
+      args:
+        chdir: $HOME
+        creates: pod_network_setup.txt
+
+    - name: Modify Network to Match with --pod-network-cidr (Download File)
+      become: yes
+      become_user: "{{ username }}"
+      get_url:
+        url: https://docs.projectcalico.org/manifests/custom-resources.yaml
+        dest: $HOME/custom-resources.yaml
+
+    - name: Apply the Custom Resource for Calico.
+      become: yes
+      become_user: "{{ username }}"
+      command: kubectl apply -f $HOME/custom-resources.yaml
