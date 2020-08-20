@@ -12,3 +12,11 @@ variable "record_name" {
 variable "ssh_key_name" {
     description = "Name of the SSH key to the digitalocean resource"
 }
+
+variable "masterNodeVmSize" {
+    description = "Size of the VM according to the Digitalocean API V2 sizes"
+}
+
+variable "workerNodeVmSize" {
+    description = "Size of the VM according to the Digitalocean API V2 sizes"
+}

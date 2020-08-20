@@ -2,9 +2,11 @@ provider "digitalocean" {
   token = "${var.digitalocean_token}"
 }
 
-module "rancherNode" {
-  source = "./modules/rancherNode"
+module "nodes" {
+  source = "./modules/nodes"
   ssh_key_name = "${var.ssh_key_name}"
+  masterNodeVmSize = var.masterNodeVmSize
+  workerNodeVmSize = var.workerNodeVmSize
 }
 # module "networking" {
 #   source = "./modules/networking"
